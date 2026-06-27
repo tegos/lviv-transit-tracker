@@ -4,7 +4,7 @@
 
 Real-time public transit tracker for Lviv, Ukraine. Select bus routes on a Google Map and watch vehicle positions update live every 5 seconds.
 
-Built in 2017 as a demo project using the SimpleRIDE API provided by the Lviv transit authority.
+> **Note:** This is a demo project built in 2017. The SimpleRIDE API provided by the Lviv transit authority may no longer be publicly accessible. The code and architecture remain a working example of real-time Socket.IO polling, but live data cannot be guaranteed.
 
 ![preview](docs/preview.gif)
 
@@ -21,19 +21,19 @@ Browser ──> animate markers on Google Map
 
 ## Tech stack
 
-- Node.js 24, Express 5
+- Node.js 20+, Express 5
 - Socket.IO 4 (server + client)
-- EJS templates
+- EJS 6 templates
+- dotenv (environment config)
 - Google Maps JavaScript API
-- HammerJS (mobile swipe gestures)
+- HammerJS 2 (mobile swipe gestures)
 - Bootstrap 3
-- nconf (config management)
 
 ## Requirements
 
 - Node.js 20+
 - A Google Maps API key with the Maps JavaScript API enabled
-- Access to a SimpleRIDE API endpoint (Lviv transit authority)
+- Access to a SimpleRIDE API endpoint (Lviv transit authority; may be unavailable - see note above)
 
 ## Setup
 
@@ -72,7 +72,6 @@ routes/         - Express route definitions
 models/         - SimpleRIDE API client
 views/          - EJS templates
 public/         - Static assets (JS, CSS)
-config/         - nconf setup and config.json (not committed)
 utils/          - Shared utilities
 test/           - Node built-in test runner specs
 ```
@@ -82,6 +81,12 @@ test/           - Node built-in test runner specs
 ```bash
 npm test
 ```
+
+## Contributing
+
+1. Fork the repo and create a feature branch (`git checkout -b my-feature`)
+2. Make your changes and add tests where relevant
+3. Push the branch and open a pull request
 
 ## License
 
