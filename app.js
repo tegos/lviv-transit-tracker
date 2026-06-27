@@ -3,7 +3,6 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var uniqueArray = require('array-unique');
 
 var router = require('./routes');
 var Model = require('./models/model');
@@ -67,10 +66,10 @@ app.io.on('connection', function (socket) {
 	socket.on('add-bus', function (route_id) {
 		console.log('add-bus');
 		allBuses.push(route_id);
-		allBuses = uniqueArray(allBuses);
+		allBuses = [...new Set(allBuses)];
 
 		socketDataClients[socket.id].push(route_id);
-		socketDataClients[socket.id] = uniqueArray(socketDataClients[socket.id]);
+		socketDataClients[socket.id] = [...new Set(socketDataClients[socket.id])];
 
 		var routePathPromise = Model.getPathData(route_id);
 
