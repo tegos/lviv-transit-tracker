@@ -1,7 +1,6 @@
 var config = require('../config');
 
-
-var SimpleRIDE_URL = config.get('api:url');
+var SimpleRIDE_URL = config.apiUrl;
 
 var apiUrl = {
     getBusUrl: function () {

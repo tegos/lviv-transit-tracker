@@ -3,7 +3,15 @@
   "version": "0.0.2",
   "private": true,
   "description": "Real-time Lviv public transit tracker - bus positions on Google Maps via Socket.IO and the SimpleRIDE API",
-  "keywords": ["lviv", "transit", "realtime", "socket.io", "express", "google-maps", "bus-tracker"],
+  "keywords": [
+    "lviv",
+    "transit",
+    "realtime",
+    "socket.io",
+    "express",
+    "google-maps",
+    "bus-tracker"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,13 +29,13 @@
     "async": "^3.2.6",
     "cookie-parser": "^1.4.7",
     "debug": "^4.4.3",
+    "dotenv": "^16.5.0",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "fresh": "latest",
     "hammerjs": "^2.0.8",
     "mime": "latest",
     "morgan": "^1.11.0",
-    "nconf": "^0.13.0",
     "serve-favicon": "^2.5.1",
     "socket.io": "^4.8.3",
     "validator": "latest"

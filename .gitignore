@@ -3,7 +3,6 @@ npm-debug.log*
 *.log
 
 .env
-config/config.json
 
 .idea/
 .DS_Store
