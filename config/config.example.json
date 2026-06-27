@@ -2,11 +2,11 @@
   "port": 3000,
   "defaultUpdate": 5000,
   "api": {
-    "url": "http://82.207.107.126:13541/SimpleRIDE/LAD/SM.WebApi/api/"
+    "url": "http://your-api-host/api/"
   },
   "db": {
-    "connection": "mongodb://tegos:tegos@ds127260.mlab.com:27260/board-node-js",
-    "name": "board-node-js",
+    "connection": "mongodb://user:password@host:port/dbname",
+    "name": "dbname",
     "options": {
       "server": {
         "socketOptions": {
@@ -16,7 +16,7 @@
     }
   },
   "session": {
-    "secret": "secret_key",
+    "secret": "your-session-secret",
     "key": "cid",
     "cookie": {
       "path": "/",
@@ -26,8 +26,8 @@
   },
   "project": {
     "admin": {
-      "password": 123456,
-      "email": "tegosiv@gmail.com"
+      "password": "your-admin-password",
+      "email": "admin@example.com"
     }
   }
 }

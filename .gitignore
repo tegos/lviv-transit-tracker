@@ -47,3 +47,7 @@ jspm_packages
 # Yarn Integrity file
 
 .idea/
+
+# Local config with secrets - copy from config.example.json
+config/config.json
+.env
