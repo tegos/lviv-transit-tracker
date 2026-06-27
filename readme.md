@@ -6,6 +6,8 @@ Real-time public transit tracker for Lviv, Ukraine. Select bus routes on a Googl
 
 Built in 2017 as a demo project using the SimpleRIDE API provided by the Lviv transit authority.
 
+![preview](docs/preview.gif)
+
 ## How it works
 
 The server fetches available bus routes from the SimpleRIDE API on startup. When a user checks a route in the sidebar, the browser emits a Socket.IO event, the server draws the route path on the map and begins polling live vehicle positions every 5 seconds, pushing updates back to all subscribed clients. Markers animate smoothly as positions change. On mobile, the route sidebar supports swipe gestures via HammerJS.
