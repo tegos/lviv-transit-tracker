@@ -10,7 +10,7 @@
 // options.complete   - callback function. Gets called, after the animation has finished
 
 google.maps.Marker.prototype.animateTo = function (newPosition, options) {
-    defaultOptions = {
+    var defaultOptions = {
         duration: 1000,
         easing: 'linear',
         complete: null
@@ -18,7 +18,7 @@ google.maps.Marker.prototype.animateTo = function (newPosition, options) {
     options = options || {};
 
     // complete missing options
-    for (key in defaultOptions) {
+    for (var key in defaultOptions) {
         options[key] = options[key] || defaultOptions[key];
     }
 
@@ -26,7 +26,6 @@ google.maps.Marker.prototype.animateTo = function (newPosition, options) {
     if (options.easing != 'linear') {
         if (typeof jQuery == 'undefined' || !jQuery.easing[options.easing]) {
             throw '"' + options.easing + '" easing function doesn\'t exist. Include jQuery and/or the jQuery easing plugin and use the right function name.';
-            return;
         }
     }
 

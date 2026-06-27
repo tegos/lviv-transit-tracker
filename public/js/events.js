@@ -60,7 +60,7 @@ var drawRoute = function (data) {
 var eventRemoveRoute = function (code_route) {
 
     mapUtil.removePath(code_route);
-    mapUtil.deleteMarkers();
+    mapUtil.deleteMarkersByCode(code_route);
 
 };
 
