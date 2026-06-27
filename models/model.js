@@ -1,26 +1,32 @@
-/**
- * Created by tegos on 10.03.2017.
- */
-
-const requestify = require('requestify');
 const apiUrl = require('../utils/apiUrl');
 
-const config = {};
-config.timeout = 60000; // 1min
+const DEFAULT_TIMEOUT = 60000;
+
+async function get(url, timeout) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) {
+            const body = await res.text();
+            throw { code: res.status, body };
+        }
+        const body = await res.text();
+        return { getBody: () => body };
+    } finally {
+        clearTimeout(id);
+    }
+}
 
 const Model = {
-    getBuses: function () {
-        const urlBus = apiUrl.getBusUrl();
-
-        return requestify.get(urlBus, config);
+    getBuses() {
+        return get(apiUrl.getBusUrl(), DEFAULT_TIMEOUT);
     },
-    getRoutes: function (code) {
-        const urlRoute = apiUrl.getRouteUrl(code);
-        return requestify.get(urlRoute, config);
+    getRoutes(code) {
+        return get(apiUrl.getRouteUrl(code), DEFAULT_TIMEOUT);
     },
-    getPathData: function (code) {
-        const urlRoute = apiUrl.getPathUrl(code);
-        return requestify.get(urlRoute, config);
+    getPathData(code) {
+        return get(apiUrl.getPathUrl(code), DEFAULT_TIMEOUT);
     }
 };
 

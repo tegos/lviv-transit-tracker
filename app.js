@@ -3,7 +3,6 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
 var uniqueArray = require('array-unique');
 
 var router = require('./routes');
@@ -27,8 +26,8 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -81,7 +80,7 @@ app.io.on('connection', function (socket) {
 				var content = response.getBody();
 				var routePathData = JSON.parse(content);
 				var data = {path: routePathData, code: route_id};
-				app.io.sockets.sockets[socket.id].emit('drawRoute', data);
+				app.io.sockets.sockets.get(socket.id).emit('drawRoute', data);
 			}
 		);
 	});
@@ -122,7 +121,7 @@ var intervalDefaultUpdate = setInterval(function () {
 					var array_buses = socketDataClients[socket_id];
 
 					if (array_buses.indexOf(route_code) > -1) {
-						app.io.sockets.sockets[socket_id].emit('defaultUpdate', routeData, route_code);
+						app.io.sockets.sockets.get(socket_id).emit('defaultUpdate', routeData, route_code);
 					}
 				}
 			}
@@ -132,7 +131,7 @@ var intervalDefaultUpdate = setInterval(function () {
 	//console.log(socketDataClients);
 
 
-}, app.config.get('defaultUpdate'));
+}, app.config.get('defaultUpdate')).unref();
 
 
 module.exports = app;
