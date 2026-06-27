@@ -1,0 +1,33 @@
+{
+  "port": 3000,
+  "defaultUpdate": 5000,
+  "api": {
+    "url": "http://your-api-host/api/"
+  },
+  "db": {
+    "connection": "mongodb://user:password@host:port/dbname",
+    "name": "dbname",
+    "options": {
+      "server": {
+        "socketOptions": {
+          "keepAlive": 1
+        }
+      }
+    }
+  },
+  "session": {
+    "secret": "your-session-secret",
+    "key": "cid",
+    "cookie": {
+      "path": "/",
+      "httpOnly": true,
+      "maxAge": null
+    }
+  },
+  "project": {
+    "admin": {
+      "password": "your-admin-password",
+      "email": "admin@example.com"
+    }
+  }
+}

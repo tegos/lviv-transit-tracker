@@ -43,29 +43,17 @@ cd lviv-transit-tracker
 npm install
 ```
 
-Create `config/config.json` from the example:
+Copy `.env.example` to `.env` and fill in your values:
 
 ```bash
-cp config/config.example.json config/config.json
+cp .env.example .env
 ```
 
-Edit `config/config.json` and fill in your values:
-
-```json
-{
-  "port": 3000,
-  "defaultUpdate": 5000,
-  "api": {
-    "url": "YOUR_SIMPLERIDE_API_URL"
-  }
-}
-```
-
-| Key | Description |
-|-----|-------------|
-| `port` | HTTP port the server listens on (default: `3000`) |
-| `defaultUpdate` | Polling interval in milliseconds (default: `5000`) |
-| `api.url` | Base URL of the SimpleRIDE Web API |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | HTTP port the server listens on |
+| `API_URL` | - | Base URL of the SimpleRIDE Web API |
+| `DEFAULT_UPDATE` | `5000` | Polling interval in milliseconds |
 
 ## Start
 

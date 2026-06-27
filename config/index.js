@@ -1,8 +1,6 @@
-var nconf = require('nconf');
-var path = require('path');
+require('dotenv').config();
 
-nconf.argv()
-    .env()
-    .file({file: path.join(__dirname, 'config.json')});
-
-module.exports = nconf;
+module.exports = {
+    apiUrl: process.env.API_URL || '',
+    defaultUpdate: parseInt(process.env.DEFAULT_UPDATE) || 5000,
+};

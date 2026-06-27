@@ -16,8 +16,7 @@ var app = express();
 // call socket.io to the app
 app.io = require('socket.io')();
 
-// configs
-app.config = require('./config');
+var config = require('./config');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -131,7 +130,7 @@ var intervalDefaultUpdate = setInterval(function () {
 	//console.log(socketDataClients);
 
 
-}, app.config.get('defaultUpdate')).unref();
+}, config.defaultUpdate).unref();
 
 
 module.exports = app;
