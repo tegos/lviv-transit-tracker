@@ -5,9 +5,7 @@ const model = require('../models/model');
 
 /* about page. */
 router.get('/about', function (req, res, next) {
-    res.render('test',
-        {test: 909, title: 'test'}
-    );
+    res.render('pages/about', { title: 'About' });
 });
 
 /* GET home page. */
