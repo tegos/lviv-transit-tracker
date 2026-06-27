@@ -131,7 +131,7 @@ var intervalDefaultUpdate = setInterval(function () {
 	//console.log(socketDataClients);
 
 
-}, app.config.get('defaultUpdate'));
+}, app.config.get('defaultUpdate')).unref();
 
 
 module.exports = app;
