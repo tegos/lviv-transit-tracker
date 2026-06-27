@@ -19,20 +19,19 @@ function setupSocket(io) {
 			socketDataClients[socket.id].push(route_id);
 			socketDataClients[socket.id] = [...new Set(socketDataClients[socket.id])];
 
-			const routePathPromise = Model.getPathData(route_id);
-
-			routePathPromise.then(function (response) {
+			Model.getPathData(route_id).then(function (response) {
 				const content = response.getBody();
 				const routePathData = JSON.parse(content);
 				const data = {path: routePathData, code: route_id};
-				io.sockets.sockets.get(socket.id).emit('drawRoute', data);
+				const sock = io.sockets.sockets.get(socket.id);
+				if (sock) sock.emit('drawRoute', data);
+			}).catch(function (err) {
+				console.error('add-bus error:', err);
 			});
 		});
 
 		// remove bus
 		socket.on('remove-bus', function (bus_id) {
-			console.log('remove-bus');
-
 			let socket_buses = socketDataClients[socket.id];
 			socket_buses = socket_buses.filter(function (item) {
 				return item !== bus_id;
@@ -49,12 +48,8 @@ function setupSocket(io) {
 
 	// defaultUpdate every time
 	const intervalDefaultUpdate = setInterval(function () {
-		console.log('defaultUpdate');
-
 		allBuses.forEach(function (route_code) {
-			const routeDataProm = Model.getRoutes(route_code);
-
-			routeDataProm.then(function (response) {
+			Model.getRoutes(route_code).then(function (response) {
 				const content = response.getBody();
 				const routeData = JSON.parse(content);
 
@@ -62,9 +57,12 @@ function setupSocket(io) {
 					const array_buses = socketDataClients[socket_id];
 
 					if (array_buses.indexOf(route_code) > -1) {
-						io.sockets.sockets.get(socket_id).emit('defaultUpdate', routeData, route_code);
+						const sock = io.sockets.sockets.get(socket_id);
+						if (sock) sock.emit('defaultUpdate', routeData, route_code);
 					}
 				}
+			}).catch(function (err) {
+				console.error('defaultUpdate error for route', route_code, ':', err);
 			});
 		});
 	}, config.defaultUpdate).unref();
