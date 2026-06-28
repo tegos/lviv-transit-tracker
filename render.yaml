@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: lviv-transit-tracker
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: node ./bin/www
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_MAPS_KEY
+        sync: false
