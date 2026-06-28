@@ -3,6 +3,17 @@ const router = express.Router();
 
 const model = require('../models/model');
 const config = require('../config');
+const createCache = require('../utils/routeCache');
+
+const routeCache = createCache();
+
+// Fetch + parse the route list, cached for routeCache's TTL.
+async function getRouteList() {
+    return routeCache.get(async () => {
+        const response = await model.getBuses();
+        return JSON.parse(response.getBody());
+    });
+}
 
 /* about page. */
 router.get('/about', function (req, res, next) {
@@ -14,19 +25,17 @@ router.get('/', async function (req, res, next) {
     const view_data = {title: 'LvivTransportMonitoringExpress', googleMapsKey: config.googleMapsKey};
 
     try {
-        const response = await model.getBuses();
-        const content = response.getBody();
-        const routes = JSON.parse(content);
+        const routes = await getRouteList();
 
-        routes.forEach(function (route, key) {
-            route['Name'] = route['long_name'];
-            route['SmallName'] = route['short_name'];
-            route['Code'] = route['short_name'];
-            route['Id'] = route['external_id'];
-            routes[key] = route;
+        // Build view objects without mutating the cached list (shared with /json).
+        view_data.stops = routes.map(function (route) {
+            return Object.assign({}, route, {
+                Name: route['long_name'],
+                SmallName: route['short_name'],
+                Code: route['short_name'],
+                Id: route['external_id'],
+            });
         });
-
-        view_data.stops = routes;
 
         return res.render('pages/index', view_data);
     } catch (error) {
@@ -45,9 +54,7 @@ router.get('/', async function (req, res, next) {
 /* GET Json Data */
 router.get('/json', async function (req, res, next) {
     try {
-        const response = await model.getBuses();
-        const content = response.getBody();
-        const json = JSON.parse(content);
+        const json = await getRouteList();
         res.send(json);
     } catch (error) {
         return res.status(500).send({
