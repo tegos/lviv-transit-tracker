@@ -1,21 +1,17 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
 
-var router = require('./routes');
-var Model = require('./models/model');
+const router = require('./routes');
+const Model = require('./models/model');
 
-var app = express();
+const app = express();
 
-
-//var middleware = require('./middleware')(app);
-
-// call socket.io to the app
 app.io = require('socket.io')();
 
-var config = require('./config');
+const config = require('./config');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -54,9 +50,9 @@ app.use(function (err, req, res, next) {
 	res.render('error');
 });
 
-var socketDataClients = [];
-var allBuses = [];
-var allClients = [];
+const socketDataClients = [];
+let allBuses = [];
+let allClients = [];
 
 //start listen with socket.io
 app.io.on('connection', function (socket) {
@@ -71,13 +67,13 @@ app.io.on('connection', function (socket) {
 		socketDataClients[socket.id].push(route_id);
 		socketDataClients[socket.id] = [...new Set(socketDataClients[socket.id])];
 
-		var routePathPromise = Model.getPathData(route_id);
+		const routePathPromise = Model.getPathData(route_id);
 
 		routePathPromise.then(function (response) {
 
-				var content = response.getBody();
-				var routePathData = JSON.parse(content);
-				var data = {path: routePathData, code: route_id};
+				const content = response.getBody();
+				const routePathData = JSON.parse(content);
+				const data = {path: routePathData, code: route_id};
 				app.io.sockets.sockets.get(socket.id).emit('drawRoute', data);
 			}
 		);
@@ -87,7 +83,7 @@ app.io.on('connection', function (socket) {
 	socket.on('remove-bus', function (bus_id) {
 		console.log('remove-bus');
 
-		var socket_buses = socketDataClients[socket.id];
+		let socket_buses = socketDataClients[socket.id];
 		socket_buses = socket_buses.filter(function (item) {
 			return item !== bus_id;
 		});
@@ -104,19 +100,17 @@ app.io.on('connection', function (socket) {
 
 // defaultUpdate every time
 var intervalDefaultUpdate = setInterval(function () {
-//var intervalDefaultUpdate = setTimeout(function () {
 	console.log('defaultUpdate');
-	//console.log(allBuses);
 
 	allBuses.forEach(function (route_code) {
-		var routeDataProm = Model.getRoutes(route_code);
+		const routeDataProm = Model.getRoutes(route_code);
 
 		routeDataProm.then(function (response) {
-				var content = response.getBody();
+				const content = response.getBody();
 				var routeData = JSON.parse(content);
 
 				for (var socket_id in socketDataClients) {
-					var array_buses = socketDataClients[socket_id];
+					const array_buses = socketDataClients[socket_id];
 
 					if (array_buses.indexOf(route_code) > -1) {
 						app.io.sockets.sockets.get(socket_id).emit('defaultUpdate', routeData, route_code);
