@@ -2,15 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 const model = require('../models/model');
+const config = require('../config');
 
 /* about page. */
 router.get('/about', function (req, res, next) {
-    res.render('pages/about', { title: 'About' });
+    res.render('pages/about', { title: 'About', googleMapsKey: config.googleMapsKey });
 });
 
 /* GET home page. */
 router.get('/', async function (req, res, next) {
-    const view_data = {title: 'LvivTransportMonitoringExpress'};
+    const view_data = {title: 'LvivTransportMonitoringExpress', googleMapsKey: config.googleMapsKey};
 
     try {
         const response = await model.getBuses();
