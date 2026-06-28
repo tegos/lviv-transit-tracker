@@ -1,19 +1,9 @@
-var config = require('../config');
+const BASE_URL = 'https://api.lad.lviv.ua';
 
-var SimpleRIDE_URL = config.apiUrl;
-
-var apiUrl = {
-    getBusUrl: function () {
-        var url = SimpleRIDE_URL + 'CompositeRoute/';
-        return url;
-    },
-    getRouteUrl: function (code) {
-        return SimpleRIDE_URL + 'RouteMonitoring/?code=' + code;
-    },
-    getPathUrl: function (code) {
-        return SimpleRIDE_URL + 'path/?code=' + code;
-    }
+const apiUrl = {
+    getBusUrl: () => `${BASE_URL}/routes.json`,
+    getRouteUrl: (name) => `${BASE_URL}/routes/dynamic/${encodeURIComponent(name)}`,
+    getPathUrl: (name) => `${BASE_URL}/routes/static/${encodeURIComponent(name)}`
 };
-
 
 module.exports = apiUrl;

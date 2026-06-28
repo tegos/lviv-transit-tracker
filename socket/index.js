@@ -22,7 +22,9 @@ function setupSocket(io) {
 			Model.getPathData(route_id).then(function (response) {
 				const content = response.getBody();
 				const routePathData = JSON.parse(content);
-				const data = {path: routePathData, code: route_id};
+				const firstShape = routePathData.shapes[0] || [];
+				const path = firstShape.map(([lat, lng]) => ({ Y: lat, X: lng }));
+				const data = {path, code: route_id};
 				const sock = io.sockets.sockets.get(socket.id);
 				if (sock) sock.emit('drawRoute', data);
 			}).catch(function (err) {
@@ -51,7 +53,15 @@ function setupSocket(io) {
 		allBuses.forEach(function (route_code) {
 			Model.getRoutes(route_code).then(function (response) {
 				const content = response.getBody();
-				const routeData = JSON.parse(content);
+				const rawData = JSON.parse(content);
+				const routeData = rawData.map(v => ({
+					VehicleId: v.id,
+					X: v.location[1],
+					Y: v.location[0],
+					Angle: v.bearing,
+					RouteName: route_code,
+					VehicleName: v.id,
+				}));
 
 				for (const socket_id in socketDataClients) {
 					const array_buses = socketDataClients[socket_id];
