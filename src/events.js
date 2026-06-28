@@ -1,25 +1,25 @@
 // Map update handlers. mapUtil is passed in rather than read from a global.
 
-export function defaultUpdate(mapUtil, data, routeCode) {
-    data.forEach((route) => {
-        const position = new google.maps.LatLng(route.Y, route.X);
+export function handleVehiclesUpdate(mapUtil, vehicles, routeCode) {
+    vehicles.forEach((vehicle) => {
+        const position = new google.maps.LatLng(vehicle.lat, vehicle.lng);
 
-        if (mapUtil.isMarkerOnMap(route.VehicleId)) {
-            mapUtil.moveMarker(mapUtil.getMarkerById(route.VehicleId), position);
+        if (mapUtil.isMarkerOnMap(vehicle.id)) {
+            mapUtil.moveMarker(mapUtil.getMarkerById(vehicle.id), position);
         } else {
-            const content = `Маршрут: <b>${route.RouteName}</b><br/>ТЗ: <b>${route.VehicleName}</b>`;
+            const content = `Маршрут: <b>${vehicle.routeCode}</b><br/>ТЗ: <b>${vehicle.name}</b>`;
             const infowindow = new google.maps.InfoWindow({ content, maxWidth: 500 });
-            mapUtil.addMarker(position, route.VehicleId, infowindow, route.Angle, routeCode);
+            mapUtil.addMarker(position, vehicle.id, infowindow, vehicle.bearing, routeCode);
         }
     });
 }
 
-export function drawRoute(mapUtil, data) {
-    const coordinates = data.path.map((p) => new google.maps.LatLng(p.Y, p.X));
-    mapUtil.drawPath(coordinates, data.code);
+export function handleRoutePath(mapUtil, { routeCode, path }) {
+    const coordinates = path.map((point) => new google.maps.LatLng(point.lat, point.lng));
+    mapUtil.drawPath(coordinates, routeCode);
 }
 
-export function eventRemoveRoute(mapUtil, routeCode) {
+export function clearRoute(mapUtil, routeCode) {
     mapUtil.removePath(routeCode);
     mapUtil.deleteMarkersByCode(routeCode);
 }

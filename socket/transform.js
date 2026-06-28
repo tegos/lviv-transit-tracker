@@ -5,19 +5,19 @@ const MAX_ROUTE_ID_LENGTH = 20;
 // api.lad.lviv.ua vehicle -> the shape the frontend map expects.
 function toVehicles(raw, routeCode) {
     return raw.map((v) => ({
-        VehicleId: v.id,
-        X: v.location[1],
-        Y: v.location[0],
-        Angle: v.bearing,
-        RouteName: routeCode,
-        VehicleName: v.id,
+        id: v.id,
+        lat: v.location[0],
+        lng: v.location[1],
+        bearing: v.bearing,
+        routeCode,
+        name: v.id,
     }));
 }
 
 // static route shapes -> polyline points for the map.
 function toPath(shapes) {
     const firstShape = (shapes && shapes[0]) || [];
-    return firstShape.map(([lat, lng]) => ({ Y: lat, X: lng }));
+    return firstShape.map(([lat, lng]) => ({ lat, lng }));
 }
 
 function isValidRouteId(routeId) {

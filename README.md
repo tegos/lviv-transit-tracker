@@ -15,9 +15,9 @@ Built in 2017 against the SimpleRIDE API provided by the Lviv transit authority.
 The server fetches available bus routes from `api.lad.lviv.ua` on page load. When a user checks a route in the sidebar, the browser emits a Socket.IO event; the server draws the route path on the map and begins polling live vehicle positions every 5 seconds, pushing updates back to all subscribed clients. Markers animate smoothly as positions change. On mobile, the route sidebar supports swipe gestures via HammerJS.
 
 ```
-Browser ──(checkbox toggle)──> socket.emit('add-bus', routeCode)
-Server ──> GET /routes/static/:name ──> socket.emit('drawRoute', path)
-Server setInterval(5s) ──> GET /routes/dynamic/:name ──> socket.emit('defaultUpdate', vehicles, code)
+Browser ──(checkbox toggle)──> socket.emit('route:subscribe', routeCode)
+Server ──> GET /routes/static/:name ──> socket.emit('route:path', { routeCode, path })
+Server setInterval(5s) ──> GET /routes/dynamic/:name ──> socket.emit('vehicles:update', vehicles, routeCode)
 Browser ──> animate markers on Google Map
 ```
 
@@ -27,9 +27,10 @@ Browser ──> animate markers on Google Map
 - Socket.IO 4 (server + client)
 - EJS 6 templates
 - dotenv (environment config)
+- Vite (frontend bundling; vanilla ES modules, no jQuery)
 - Google Maps JavaScript API
-- HammerJS 2 (mobile swipe gestures)
-- Bootstrap 3
+- HammerJS 2 (mobile swipe gestures, bundled)
+- Bootstrap 3 (CSS only)
 
 ## Setup
 
@@ -45,7 +46,7 @@ Edit `.env` and set your Google Maps key:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3000` | HTTP port |
-| `DEFAULT_UPDATE` | `5000` | Polling interval in milliseconds |
+| `POLL_INTERVAL_MS` | `5000` | Vehicle-position polling interval in milliseconds |
 | `GOOGLE_MAPS_KEY` | - | Google Maps JavaScript API key |
 
 ## Start
@@ -54,7 +55,7 @@ Edit `.env` and set your Google Maps key:
 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Check any route in the sidebar to track it on the map.
+`npm start` runs the Vite build first (`prestart`), then boots the server. Open [http://localhost:3000](http://localhost:3000). Check any route in the sidebar to track it on the map.
 
 ## Project structure
 
@@ -63,17 +64,21 @@ app.js          - Express app entry
 bin/www         - HTTP server
 routes/         - Express route handlers
 models/         - API client (fetch wrapper)
-socket/         - Socket.IO event handlers and polling loop
+socket/         - Socket.IO event handlers, polling loop, event-name enum
+src/            - Frontend ES modules (bundled by Vite into public/dist)
 views/          - EJS templates
-public/         - Static assets (JS, CSS)
-utils/          - URL builders
+public/         - Static assets (CSS); public/dist holds the built bundle
+utils/          - URL builders, route-list cache
 test/           - Node built-in test runner specs
+e2e/            - Playwright browser smoke tests
 ```
 
 ## Running tests
 
 ```bash
-npm test
+npm test              # unit + socket integration (offline)
+INTEGRATION=1 npm test # also hit the live api.lad.lviv.ua
+npm run test:e2e      # Playwright browser smoke tests
 ```
 
 ## Contributing

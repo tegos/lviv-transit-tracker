@@ -2,7 +2,8 @@ import { io } from 'socket.io-client';
 import Hammer from 'hammerjs';
 import { createMap, MapUtil } from './map.js';
 import { installMarkerAnimate } from './markerAnimate.js';
-import { defaultUpdate, drawRoute, eventRemoveRoute } from './events.js';
+import { handleVehiclesUpdate, handleRoutePath, clearRoute } from './events.js';
+import Events from '../socket/events.js';
 
 let mapUtil = null;
 
@@ -36,17 +37,17 @@ function loadGoogleMaps(key) {
 function wireRouteToggles(socket) {
     document.querySelectorAll('#route_stops input').forEach((input) => {
         input.addEventListener('change', () => {
-            const code = input.value;
+            const routeCode = input.value;
             if (input.checked) {
-                socket.emit('add-bus', code, (res) => {
+                socket.emit(Events.ROUTE_SUBSCRIBE, routeCode, (res) => {
                     if (res && !res.ok) {
-                        console.error('add-bus failed:', res.error);
+                        console.error(`${Events.ROUTE_SUBSCRIBE} failed:`, res.error);
                         input.checked = false;
                     }
                 });
             } else {
-                socket.emit('remove-bus', code);
-                if (mapUtil) eventRemoveRoute(mapUtil, code);
+                socket.emit(Events.ROUTE_UNSUBSCRIBE, routeCode);
+                if (mapUtil) clearRoute(mapUtil, routeCode);
             }
         });
     });
@@ -74,8 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapsKey = config ? config.dataset.mapsKey : '';
 
     const socket = io();
-    socket.on('defaultUpdate', (data, code) => { if (mapUtil) defaultUpdate(mapUtil, data, code); });
-    socket.on('drawRoute', (data) => { if (mapUtil) drawRoute(mapUtil, data); });
+    socket.on(Events.VEHICLES_UPDATE, (vehicles, routeCode) => {
+        if (mapUtil) handleVehiclesUpdate(mapUtil, vehicles, routeCode);
+    });
+    socket.on(Events.ROUTE_PATH, (data) => { if (mapUtil) handleRoutePath(mapUtil, data); });
 
     wireRouteToggles(socket);
     wireMenuSwipe();
