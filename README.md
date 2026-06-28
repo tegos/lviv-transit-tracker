@@ -1,6 +1,9 @@
 # Lviv Transit Tracker
 
 [![CI](https://github.com/tegos/lviv-transit-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/tegos/lviv-transit-tracker/actions/workflows/ci.yml)
+[![Live](https://img.shields.io/badge/live-onrender.com-brightgreen)](https://lviv-transit-tracker.onrender.com)
+
+**Live demo:** https://lviv-transit-tracker.onrender.com
 
 Real-time public transit tracker for Lviv, Ukraine. Select bus routes on a Google Map and watch vehicle positions update live every 5 seconds.
 
