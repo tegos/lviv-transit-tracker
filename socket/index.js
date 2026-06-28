@@ -2,79 +2,62 @@
 
 const Model = require('../models/model');
 const config = require('../config');
+const createRegistry = require('./clientRegistry');
+const { toVehicles, toPath, isValidRouteId } = require('./transform');
 
 function setupSocket(io) {
-	const socketDataClients = [];
-	let allBuses = [];
+	const registry = createRegistry();
 
 	io.on('connection', function (socket) {
-		socketDataClients[socket.id] = [];
-
 		// add bus
-		socket.on('add-bus', function (route_id) {
-			console.log('add-bus');
-			allBuses.push(route_id);
-			allBuses = [...new Set(allBuses)];
+		socket.on('add-bus', async function (route_id, ack) {
+			if (!isValidRouteId(route_id)) {
+				if (typeof ack === 'function') ack({ ok: false, error: 'invalid route id' });
+				return;
+			}
+			registry.add(socket.id, route_id);
 
-			socketDataClients[socket.id].push(route_id);
-			socketDataClients[socket.id] = [...new Set(socketDataClients[socket.id])];
-
-			Model.getPathData(route_id).then(function (response) {
-				const content = response.getBody();
-				const routePathData = JSON.parse(content);
-				const firstShape = routePathData.shapes[0] || [];
-				const path = firstShape.map(([lat, lng]) => ({ Y: lat, X: lng }));
-				const data = {path, code: route_id};
-				const sock = io.sockets.sockets.get(socket.id);
-				if (sock) sock.emit('drawRoute', data);
-			}).catch(function (err) {
+			try {
+				const response = await Model.getPathData(route_id);
+				const routePathData = JSON.parse(response.getBody());
+				const path = toPath(routePathData.shapes);
+				socket.emit('drawRoute', { path, code: route_id });
+				if (typeof ack === 'function') ack({ ok: true });
+			} catch (err) {
 				console.error('add-bus error:', err);
-			});
+				if (typeof ack === 'function') ack({ ok: false, error: err.message });
+			}
 		});
 
 		// remove bus
-		socket.on('remove-bus', function (bus_id) {
-			let socket_buses = socketDataClients[socket.id];
-			socket_buses = socket_buses.filter(function (item) {
-				return item !== bus_id;
-			});
-
-			socketDataClients[socket.id] = socket_buses;
+		socket.on('remove-bus', function (route_id) {
+			registry.remove(socket.id, route_id);
 		});
 
 		// disconnect
 		socket.on('disconnect', function () {
-			delete socketDataClients[socket.id];
+			registry.disconnect(socket.id);
 		});
 	});
 
-	// defaultUpdate every time
-	const intervalDefaultUpdate = setInterval(function () {
-		allBuses.forEach(function (route_code) {
-			Model.getRoutes(route_code).then(function (response) {
-				const content = response.getBody();
-				const rawData = JSON.parse(content);
-				const routeData = rawData.map(v => ({
-					VehicleId: v.id,
-					X: v.location[1],
-					Y: v.location[0],
-					Angle: v.bearing,
-					RouteName: route_code,
-					VehicleName: v.id,
-				}));
+	// poll active routes and push updates to their subscribers
+	const intervalDefaultUpdate = setInterval(async function () {
+		const routes = registry.activeRoutes();
+		if (routes.size === 0) return;
 
-				for (const socket_id in socketDataClients) {
-					const array_buses = socketDataClients[socket_id];
+		for (const route_code of routes) {
+			try {
+				const response = await Model.getRoutes(route_code);
+				const rawData = JSON.parse(response.getBody());
+				const routeData = toVehicles(rawData, route_code);
 
-					if (array_buses.indexOf(route_code) > -1) {
-						const sock = io.sockets.sockets.get(socket_id);
-						if (sock) sock.emit('defaultUpdate', routeData, route_code);
-					}
+				for (const socket_id of registry.subscribersOf(route_code)) {
+					io.sockets.sockets.get(socket_id)?.emit('defaultUpdate', routeData, route_code);
 				}
-			}).catch(function (err) {
+			} catch (err) {
 				console.error('defaultUpdate error for route', route_code, ':', err);
-			});
-		});
+			}
+		}
 	}, config.defaultUpdate).unref();
 
 	return intervalDefaultUpdate;

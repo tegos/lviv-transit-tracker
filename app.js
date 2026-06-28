@@ -24,9 +24,6 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// node_modules - serve only the hammerjs package, not all of node_modules
-app.use('/scripts/hammerjs', express.static(path.join(__dirname, 'node_modules', 'hammerjs')));
-
 //define routes
 app.use('/', router);
 

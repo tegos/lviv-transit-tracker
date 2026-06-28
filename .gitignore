@@ -2,6 +2,14 @@ node_modules/
 npm-debug.log*
 *.log
 
+# Vite build output
+public/dist/
+
+# Playwright
+test-results/
+playwright-report/
+.playwright/
+
 .env
 
 .idea/
