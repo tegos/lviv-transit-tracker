@@ -16,15 +16,17 @@ router.get('/', async function (req, res, next) {
     try {
         const response = await model.getBuses();
         const content = response.getBody();
-        const stops = JSON.parse(content);
+        const routes = JSON.parse(content);
 
-        stops.forEach(function (stop, key) {
-            const words = stop['Name'].split(" ");
-            stop['SmallName'] = words[0];
-            stops[key] = stop;
+        routes.forEach(function (route, key) {
+            route['Name'] = route['long_name'];
+            route['SmallName'] = route['short_name'];
+            route['Code'] = route['short_name'];
+            route['Id'] = route['external_id'];
+            routes[key] = route;
         });
 
-        view_data.stops = stops;
+        view_data.stops = routes;
 
         return res.render('pages/index', view_data);
     } catch (error) {

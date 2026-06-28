@@ -22,7 +22,7 @@ afterEach(() => {
 
 test('getBuses calls the bus endpoint and exposes body via getBody()', async () => {
     const res = await model.getBuses();
-    assert.ok(capturedUrl.includes('CompositeRoute'), `URL was: ${capturedUrl}`);
+    assert.ok(capturedUrl.includes('routes.json'), `URL was: ${capturedUrl}`);
     assert.equal(res.getBody(), '[{"id":1}]');
 });
 
@@ -34,9 +34,9 @@ test('getRoutes rejects with status code when server returns error', async () =>
     );
 });
 
-test('getPathData calls an endpoint that includes path/', async () => {
+test('getPathData calls the static route endpoint', async () => {
     const res = await model.getPathData('7');
-    assert.ok(capturedUrl.includes('path/'), `URL was: ${capturedUrl}`);
+    assert.ok(capturedUrl.includes('/routes/static/'), `URL was: ${capturedUrl}`);
     assert.equal(res.getBody(), '[{"id":1}]');
 });
 

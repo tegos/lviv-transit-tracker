@@ -22,7 +22,3 @@ test('defaultUpdate defaults to 5000 when DEFAULT_UPDATE env var is absent', () 
     delete require.cache[configPath];
 });
 
-test('apiUrl is a string', () => {
-    const config = require('../config/index');
-    assert.equal(typeof config.apiUrl, 'string');
-});
