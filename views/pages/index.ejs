@@ -1,57 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <%- include('../partials/head') %>
 </head>
-<body class="container">
+<body class="app-map">
 
 <header>
     <%- include('../partials/header') %>
-
 </header>
-
-<!-- Fixed navbar -->
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand clear-marker" href="#"><%= title %></a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="/">Home</a></li>
-
-
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-        </div><!--/.nav-collapse -->
-    </div>
-</nav>
-
 
 <div id="map"></div>
 <div id="menu">
+    <input id="route-search" type="search" placeholder="Пошук маршруту..." autocomplete="off"/>
     <div id="route_stops">
         <% routes.forEach(function (route) { %>
-        <div title="<%= route['Name'] %>">
+        <div class="route-row" title="<%= route['Name'] %>" data-name="<%= route['Name'] %>" data-code="<%= route['Code'] %>">
             <input type="checkbox" value="<%= route['Code'] %>" id="route<%= route['Id'] %>"
                    name="route<%= route['Id'] %>"/>
-            <label class="label-desktop" for="route<%= route['Id'] %>"><span></span> <%= route['Name'] %></label>
-            <label class="label-mobile" for="route<%= route['Id'] %>"><span></span><%= route['SmallName'] %></label>
+            <label class="label-desktop" for="route<%= route['Id'] %>"><span class="check"></span><span class="route-num"><%= route['SmallName'] %></span><span class="route-name"><%= route['Name'] %></span></label>
+            <label class="label-mobile" for="route<%= route['Id'] %>"><span class="check"></span><span class="route-num"><%= route['SmallName'] %></span></label>
         </div>
         <% }); %>
     </div>
 </div>
-
 
 <footer>
     <%- include('../partials/footer') %>
