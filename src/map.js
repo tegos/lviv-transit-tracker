@@ -1,3 +1,5 @@
+import { colorForCode } from './routeColor.js';
+
 const COLORS = [
     '#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5',
     '#2196f3', '#00bcd4', '#009688', '#ff5722', '#795548',
@@ -72,7 +74,7 @@ export class MapUtil {
     }
 
     drawPath(pathCoord, code) {
-        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        const color = colorForCode(code, COLORS);
         const mapPath = new google.maps.Polyline({
             zIndex: -100,
             optimized: false,
@@ -84,6 +86,13 @@ export class MapUtil {
         });
         mapPath.setMap(this.map);
         this.paths.set(code, mapPath);
+    }
+
+    fitToPath(pathCoord) {
+        if (!pathCoord || !pathCoord.length) return;
+        const bounds = new google.maps.LatLngBounds();
+        for (const point of pathCoord) bounds.extend(point);
+        this.map.fitBounds(bounds);
     }
 
     removePath(code) {
