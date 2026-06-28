@@ -9,7 +9,7 @@ async function get(url, timeout) {
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) {
             const body = await res.text();
-            throw { code: res.status, body };
+            throw Object.assign(new Error(body), { code: res.status });
         }
         const body = await res.text();
         return { getBody: () => body };

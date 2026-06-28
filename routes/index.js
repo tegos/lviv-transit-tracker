@@ -28,8 +28,8 @@ router.get('/', async function (req, res, next) {
         return res.render('pages/index', view_data);
     } catch (error) {
         let errorMessage = "Request Failed";
-        if (error.code && error.body) {
-            errorMessage += " - " + error.code + ": " + error.body;
+        if (error.code && error.message) {
+            errorMessage += " - " + error.code + ": " + error.message;
         }
 
         console.log(error);
