@@ -7,7 +7,7 @@ test('home page renders routes from the bundle with no console errors', async ({
 
     await page.goto('/');
 
-    await expect(page).toHaveTitle(/Lviv/i);
+    await expect(page).toHaveTitle(/Транспорт Львова/i);
 
     // Route checkboxes are server-rendered from the cached route list.
     const checkboxes = page.locator('#route_stops input');
@@ -34,4 +34,16 @@ test('toggling a route subscribes and the bundle handles the ack', async ({ page
 
     // On a successful ack the box stays checked; on failure the bundle unchecks it.
     await expect(page.locator('#route_stops input').first()).toBeChecked();
+});
+
+test('about and contact pages render with no Bootstrap CDN', async ({ page }) => {
+    await page.goto('/about');
+    await expect(page.locator('h1')).toContainText('Транспорт Львова Live');
+
+    await page.goto('/contact');
+    await expect(page.locator('h1')).toContainText('Контакти');
+
+    // No external Bootstrap stylesheet anywhere.
+    const bootstrapLinks = await page.locator('link[href*="bootstrap"]').count();
+    expect(bootstrapLinks).toBe(0);
 });

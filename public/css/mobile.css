@@ -1,15 +1,36 @@
 /* Extra Small Devices, Phones */
-@media only screen and (min-width: 320px ) and (max-width: 500px) {
+@media only screen and (max-width: 500px) {
 
     .label-desktop {
         display: none !important;
     }
 
     .label-mobile {
-        display: inline-block !important;
+        display: flex !important;
     }
 
     #menu {
-        max-width: 150px;
+        max-width: 60vw;
+        width: 240px;
+    }
+
+    .navbar-toggle {
+        display: block;
+    }
+
+    .navbar .nav {
+        display: none;
+        position: absolute;
+        top: 50px;
+        right: 0;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, .9);
+        margin: 0;
+        padding: 8px;
+        min-width: 180px;
+    }
+
+    .navbar .nav.in {
+        display: flex;
     }
 }

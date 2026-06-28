@@ -37,17 +37,40 @@ function wireRouteToggles(socket) {
     document.querySelectorAll('#route_stops input').forEach((input) => {
         input.addEventListener('change', () => {
             const routeCode = input.value;
+            const row = input.closest('.route-row');
             if (input.checked) {
+                if (row) row.classList.add('loading');
                 socket.emit(Events.ROUTE_SUBSCRIBE, routeCode, (res) => {
                     if (res && !res.ok) {
                         console.error(`${Events.ROUTE_SUBSCRIBE} failed:`, res.error);
                         input.checked = false;
+                        if (row) row.classList.remove('loading');
                     }
                 });
             } else {
                 socket.emit(Events.ROUTE_UNSUBSCRIBE, routeCode);
                 if (mapUtil) clearRoute(mapUtil, routeCode);
             }
+        });
+    });
+}
+
+// Clears the loading spinner for a route once its first data arrives.
+function clearLoading(routeCode) {
+    const row = document.querySelector(`.route-row[data-code="${CSS.escape(String(routeCode))}"]`);
+    if (row) row.classList.remove('loading');
+}
+
+// Client-side filter of the route sidebar by name or code.
+function wireRouteSearch() {
+    const search = document.getElementById('route-search');
+    if (!search) return;
+    search.addEventListener('input', () => {
+        const q = search.value.trim().toLowerCase();
+        document.querySelectorAll('#route_stops .route-row').forEach((row) => {
+            const name = (row.dataset.name || '').toLowerCase();
+            const code = (row.dataset.code || '').toLowerCase();
+            row.style.display = (!q || name.includes(q) || code.includes(q)) ? '' : 'none';
         });
     });
 }
@@ -90,11 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const socket = io();
     socket.on(Events.VEHICLES_UPDATE, (vehicles, routeCode) => {
+        clearLoading(routeCode);
         if (mapUtil) handleVehiclesUpdate(mapUtil, vehicles, routeCode);
     });
-    socket.on(Events.ROUTE_PATH, (data) => { if (mapUtil) handleRoutePath(mapUtil, data); });
+    socket.on(Events.ROUTE_PATH, (data) => {
+        clearLoading(data.routeCode);
+        if (mapUtil) handleRoutePath(mapUtil, data);
+    });
 
     wireRouteToggles(socket);
+    wireRouteSearch();
     wireMenuSwipe();
     wireNavbarToggle();
 

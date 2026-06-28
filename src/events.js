@@ -17,6 +17,7 @@ export function handleVehiclesUpdate(mapUtil, vehicles, routeCode) {
 export function handleRoutePath(mapUtil, { routeCode, path }) {
     const coordinates = path.map((point) => new google.maps.LatLng(point.lat, point.lng));
     mapUtil.drawPath(coordinates, routeCode);
+    mapUtil.fitToPath(coordinates);
 }
 
 export function clearRoute(mapUtil, routeCode) {

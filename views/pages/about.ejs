@@ -1,32 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <%- include('../partials/head') %>
 </head>
-<body class="container">
+<body class="app-page">
 
 <header>
     <%- include('../partials/header') %>
 </header>
 
-<main>
-    <div class="row">
-        <div class="col-sm-8">
-
-            <div class="jumbotron">
-                <h1>This is great</h1>
-                <p>Welcome to templating using EJS</p>
-            </div>
-
-        </div>
-        <div class="col-sm-4">
-
-            <div class="well">
-                <h3>Look I'm A Sidebar!</h3>
-            </div>
-
-        </div>
-    </div>
+<main class="page">
+    <h1>Транспорт Львова Live</h1>
+    <p>
+        Це застосунок для відстеження громадського транспорту Львова в реальному часі.
+        Обирайте маршрути в меню зліва — і бачите, де зараз їде кожен трамвай, тролейбус
+        чи автобус, прямо на мапі.
+    </p>
+    <h2>Як це працює</h2>
+    <p>
+        Позиції транспортних засобів надходять із SimpleRIDE API. Сервер передає оновлення
+        у браузер через WebSocket (Socket.IO), а маркери на Google Maps плавно рухаються
+        слідом за реальним транспортом. Дані оновлюються постійно, без перезавантаження
+        сторінки.
+    </p>
+    <h2>Джерело даних</h2>
+    <p>
+        Маршрути та координати беруться з відкритого API системи моніторингу
+        громадського транспорту Львова.
+    </p>
 </main>
 
 <footer>
