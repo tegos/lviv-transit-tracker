@@ -19,8 +19,7 @@ function setupSocket(io) {
 			registry.add(socket.id, routeCode);
 
 			try {
-				const response = await Model.getPathData(routeCode);
-				const routePathData = JSON.parse(response.getBody());
+				const routePathData = await Model.getPathData(routeCode);
 				const path = toPath(routePathData.shapes);
 				socket.emit(Events.ROUTE_PATH, { routeCode, path });
 				if (typeof ack === 'function') ack({ ok: true });
@@ -47,8 +46,7 @@ function setupSocket(io) {
 
 		for (const routeCode of routeCodes) {
 			try {
-				const response = await Model.getRoutes(routeCode);
-				const rawData = JSON.parse(response.getBody());
+				const rawData = await Model.getRoutes(routeCode);
 				const vehicles = toVehicles(rawData, routeCode);
 
 				for (const socketId of registry.subscribersOf(routeCode)) {
