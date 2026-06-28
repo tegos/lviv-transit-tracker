@@ -28,13 +28,14 @@ router.get('/', async function (req, res, next) {
         const routes = await getRouteList();
 
         // Build view objects without mutating the cached list (shared with /json).
-        view_data.stops = routes.map(function (route) {
-            return Object.assign({}, route, {
+        view_data.routes = routes.map(function (route) {
+            return {
+                ...route,
                 Name: route['long_name'],
                 SmallName: route['short_name'],
                 Code: route['short_name'],
                 Id: route['external_id'],
-            });
+            };
         });
 
         return res.render('pages/index', view_data);

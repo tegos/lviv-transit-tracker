@@ -41,14 +41,14 @@
 <div id="map"></div>
 <div id="menu">
     <div id="route_stops">
-        <% for (var i = 0; i < stops.length; i++) { var stop = stops[i]; %>
-        <div title="<%= stop['Name'] %>">
-            <input type="checkbox" value="<%= stop['Code'] %>" id="route<%= stop['Id'] %>"
-                   name="route<%= stop['Id'] %>"/>
-            <label class="label-desktop" for="route<%= stop['Id'] %>"><span></span> <%= stop['Name'] %></label>
-            <label class="label-mobile" for="route<%= stop['Id'] %>"><span></span><%= stop['SmallName'] %></label>
+        <% routes.forEach(function (route) { %>
+        <div title="<%= route['Name'] %>">
+            <input type="checkbox" value="<%= route['Code'] %>" id="route<%= route['Id'] %>"
+                   name="route<%= route['Id'] %>"/>
+            <label class="label-desktop" for="route<%= route['Id'] %>"><span></span> <%= route['Name'] %></label>
+            <label class="label-mobile" for="route<%= route['Id'] %>"><span></span><%= route['SmallName'] %></label>
         </div>
-        <% } %>
+        <% }); %>
     </div>
 </div>
 
