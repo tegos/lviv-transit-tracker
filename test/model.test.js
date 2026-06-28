@@ -33,3 +33,14 @@ test('getRoutes rejects with status code when server returns error', async () =>
         (err) => err.code === 503
     );
 });
+
+test('getPathData calls an endpoint that includes path/', async () => {
+    const res = await model.getPathData('7');
+    assert.ok(capturedUrl.includes('path/'), `URL was: ${capturedUrl}`);
+    assert.equal(res.getBody(), '[{"id":1}]');
+});
+
+test('getRoutes resolves and getBody() returns the mocked text', async () => {
+    const res = await model.getRoutes('15');
+    assert.equal(res.getBody(), '[{"id":1}]');
+});
