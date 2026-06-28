@@ -161,21 +161,20 @@ function MapUtil(map) {
     };
 
     this.removePath = function (code) {
-        var mapPath = paths[code] || 0;
+        var mapPath = paths[code];
+        if (!mapPath) return;
         mapPath.setMap(null);
+        delete paths[code];
     };
 
     this.deleteMarkersByCode = function (code) {
-        for (var i = 0; i < markers.length; i++) {
-            var marker = markers[i];
-            var marker_code = marker.routeCode;
-            console.log(marker_code);
-            console.log(code);
-            if (marker_code == code) {
+        markers = markers.filter(function (marker) {
+            if (marker.routeCode == code) {
                 marker.setMap(null);
-                markers.splice(i, 1);
+                return false;
             }
-        }
+            return true;
+        });
     };
 
 }
