@@ -16,3 +16,6 @@ playwright-report/
 .DS_Store
 
 .claude/
+
+# Superpowers SDD scratch (ledger, briefs, review diffs)
+.superpowers/
