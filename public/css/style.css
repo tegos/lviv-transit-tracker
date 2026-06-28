@@ -1,11 +1,98 @@
 html, body {
     height: 100%;
     width: 100%;
+    margin: 0;
     background-color: #40464b;
 }
 
-.navbar-inverse {
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
     background-color: rgba(0, 0, 0, .7);
+    z-index: 1000;
+}
+
+.navbar-inner {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 16px;
+    gap: 16px;
+}
+
+.navbar-brand {
+    color: #f2f2f2;
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.navbar .nav {
+    display: flex;
+    list-style: none;
+    margin: 0 0 0 auto;
+    padding: 0;
+    gap: 8px;
+}
+
+.navbar .nav a {
+    color: #cfd3d7;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.navbar .nav a:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.navbar-toggle {
+    display: none;
+    margin-left: auto;
+    background: none;
+    border: 1px solid #6b6f73;
+    border-radius: 4px;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.navbar-toggle .icon-bar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #cfd3d7;
+    margin: 3px 0;
+}
+
+/* Route list rows: number badge + name + selected highlight */
+.route-row label {
+    align-items: center;
+    gap: 8px;
+}
+
+.route-num {
+    display: inline-block;
+    min-width: 34px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #8ab4f8;
+}
+
+.route-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.route-row input:checked ~ label {
+    color: #fff;
+    background: rgba(33, 150, 243, .15);
+    border-radius: 4px;
 }
 
 #route_stops div {
@@ -47,5 +134,72 @@ html, body {
 }
 
 .label-desktop {
-    display: inline-block;
+    display: flex;
 }
+
+/* Static pages (about, contact, error) */
+body.app-page {
+    background-color: #40464b;
+    color: #e8eaed;
+    font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+}
+
+.page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 80px 20px 40px;
+    line-height: 1.6;
+}
+
+.page h1 { margin-top: 0; }
+.page a { color: #6cb6ff; }
+
+.contact-list {
+    list-style: none;
+    padding: 0;
+}
+.contact-list li { margin: 8px 0; }
+
+.error-stack {
+    white-space: pre-wrap;
+    background: rgba(0, 0, 0, .4);
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.text-center { text-align: center; }
+.text-muted { color: #9aa0a6; }
+
+/* Loading spinner while a route subscription is pending */
+.route-row.loading > label::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border: 2px solid rgba(255, 255, 255, .3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    vertical-align: middle;
+    animation: route-spin 0.8s linear infinite;
+}
+
+@keyframes route-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Route search filter */
+#route-search {
+    box-sizing: border-box;
+    width: calc(100% - 20px);
+    margin: 8px 10px;
+    padding: 6px 8px;
+    border: 1px solid #5f6368;
+    border-radius: 4px;
+    background: #2b2f33;
+    color: #e8eaed;
+}
+
+#route-search::placeholder { color: #9aa0a6; }
