@@ -1,5 +1,4 @@
 import { io } from 'socket.io-client';
-import Hammer from 'hammerjs';
 import { createMap, MapUtil } from './map.js';
 import { installMarkerAnimate } from './markerAnimate.js';
 import { handleVehiclesUpdate, handleRoutePath, clearRoute } from './events.js';
@@ -53,13 +52,28 @@ function wireRouteToggles(socket) {
     });
 }
 
+// Native horizontal-swipe handling for the route sidebar (replaces HammerJS).
 function wireMenuSwipe() {
     const menu = document.getElementById('menu');
     if (!menu) return;
-    const hammer = new Hammer.Manager(menu);
-    hammer.add(new Hammer.Swipe());
-    hammer.on('swipeleft', () => { menu.style.left = `${menu.offsetLeft - 100}px`; });
-    hammer.on('swiperight', () => { menu.style.left = `${menu.offsetLeft + 100}px`; });
+
+    const SWIPE_THRESHOLD = 40; // px
+    let startX = 0;
+    let startY = 0;
+
+    menu.addEventListener('touchstart', (e) => {
+        const touch = e.changedTouches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+    }, { passive: true });
+
+    menu.addEventListener('touchend', (e) => {
+        const touch = e.changedTouches[0];
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+        if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) <= Math.abs(dy)) return; // not a horizontal swipe
+        menu.style.left = `${menu.offsetLeft + (dx < 0 ? -100 : 100)}px`;
+    }, { passive: true });
 }
 
 // Replaces Bootstrap 3's jQuery-based collapse for the navbar toggle.
