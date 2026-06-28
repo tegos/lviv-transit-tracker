@@ -25,7 +25,8 @@
     "start": "node ./bin/www",
     "build": "vite build",
     "dev": "vite build --watch",
-    "test": "NODE_ENV=test node --test test/*.test.js"
+    "test": "NODE_ENV=test node --test test/*.test.js",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
@@ -40,6 +41,7 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "vite": "^8.1.0"
   }
 }
