@@ -9,10 +9,7 @@ const routeCache = createCache();
 
 // Fetch + parse the route list, cached for routeCache's TTL.
 async function getRouteList() {
-    return routeCache.get(async () => {
-        const response = await model.getBuses();
-        return JSON.parse(response.getBody());
-    });
+    return routeCache.get(() => model.getBuses());
 }
 
 /* about page. */

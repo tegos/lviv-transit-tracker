@@ -45,9 +45,7 @@ function connect() {
 }
 
 test('route:subscribe fetches the path, emits route:path, and acks ok', async () => {
-    Model.getPathData = async () => ({
-        getBody: () => JSON.stringify({ shapes: [[[49.84, 24.03], [49.85, 24.04]]] }),
-    });
+    Model.getPathData = async () => ({ shapes: [[[49.84, 24.03], [49.85, 24.04]]] });
 
     const client = connect();
     try {
@@ -65,7 +63,7 @@ test('route:subscribe fetches the path, emits route:path, and acks ok', async ()
 
 test('route:subscribe with an invalid route code acks an error and never emits a path', async () => {
     let pathCalled = false;
-    Model.getPathData = async () => { pathCalled = true; return { getBody: () => '{}' }; };
+    Model.getPathData = async () => { pathCalled = true; return {}; };
 
     const client = connect();
     try {
