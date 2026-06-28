@@ -16,12 +16,12 @@ async function getRouteList() {
 }
 
 /* about page. */
-router.get('/about', function (req, res, next) {
+router.get('/about', function (req, res) {
     res.render('pages/about', { title: 'About', googleMapsKey: config.googleMapsKey });
 });
 
 /* GET home page. */
-router.get('/', async function (req, res, next) {
+router.get('/', async function (req, res) {
     const view_data = {title: 'LvivTransportMonitoringExpress', googleMapsKey: config.googleMapsKey};
 
     try {
@@ -45,22 +45,19 @@ router.get('/', async function (req, res, next) {
             errorMessage += " - " + error.code + ": " + error.message;
         }
 
-        console.log(error);
-        return res.status(400).send({
-            message: errorMessage
-        });
+        console.error(error);
+        return res.status(400).send({ message: errorMessage });
     }
 });
 
 /* GET Json Data */
-router.get('/json', async function (req, res, next) {
+router.get('/json', async function (req, res) {
     try {
         const json = await getRouteList();
         res.send(json);
     } catch (error) {
-        return res.status(500).send({
-            message: error.message || "Internal Server Error"
-        });
+        console.error(error);
+        return res.status(500).send({ message: error.message || "Internal Server Error" });
     }
 });
 
