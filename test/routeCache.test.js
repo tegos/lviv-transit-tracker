@@ -1,7 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-const createCache = require('../utils/routeCache');
+const createCache = require('../services/routeCache');
 
 test('first call invokes fetchFn and returns its value', async () => {
     let calls = 0;

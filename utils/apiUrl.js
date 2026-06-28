@@ -1,9 +1,9 @@
-const BASE_URL = 'https://api.lad.lviv.ua';
+const config = require('../config');
 
 const apiUrl = {
-    getBusUrl: () => `${BASE_URL}/routes.json`,
-    getRouteUrl: (name) => `${BASE_URL}/routes/dynamic/${encodeURIComponent(name)}`,
-    getPathUrl: (name) => `${BASE_URL}/routes/static/${encodeURIComponent(name)}`
+    getBusUrl: () => `${config.apiBaseUrl}/routes.json`,
+    getRouteUrl: (name) => `${config.apiBaseUrl}/routes/dynamic/${encodeURIComponent(name)}`,
+    getPathUrl: (name) => `${config.apiBaseUrl}/routes/static/${encodeURIComponent(name)}`
 };
 
 module.exports = apiUrl;
