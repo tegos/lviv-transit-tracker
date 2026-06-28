@@ -14,12 +14,17 @@ async function getRouteList() {
 
 /* about page. */
 router.get('/about', function (req, res) {
-    res.render('pages/about', { title: 'About', googleMapsKey: config.googleMapsKey });
+    res.render('pages/about', { title: 'Про застосунок — Транспорт Львова Live', googleMapsKey: config.googleMapsKey });
+});
+
+/* contact page. */
+router.get('/contact', function (req, res) {
+    res.render('pages/contact', { title: 'Контакти — Транспорт Львова Live', googleMapsKey: config.googleMapsKey });
 });
 
 /* GET home page. */
 router.get('/', async function (req, res) {
-    const view_data = {title: 'LvivTransportMonitoringExpress', googleMapsKey: config.googleMapsKey};
+    const view_data = {title: 'Транспорт Львова Live - відстеження транспорту онлайн', googleMapsKey: config.googleMapsKey};
 
     try {
         const routes = await getRouteList();

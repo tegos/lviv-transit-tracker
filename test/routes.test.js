@@ -5,11 +5,12 @@ test('routes module loads without throwing', () => {
     assert.doesNotThrow(() => require('../routes/index'));
 });
 
-test('/json route is registered on the router', () => {
+test('home, about, contact and json routes are registered', () => {
     const router = require('../routes/index');
-    // Express router exposes its registered layers via .stack
     const paths = router.stack
         .filter(layer => layer.route)
         .map(layer => layer.route.path);
-    assert.ok(paths.includes('/json'), `registered paths: ${paths.join(', ')}`);
+    for (const p of ['/', '/about', '/contact', '/json']) {
+        assert.ok(paths.includes(p), `missing ${p}; registered: ${paths.join(', ')}`);
+    }
 });
