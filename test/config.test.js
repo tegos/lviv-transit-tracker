@@ -7,6 +7,20 @@ test('pollIntervalMs is a finite number', () => {
     assert.ok(Number.isFinite(config.pollIntervalMs), `expected finite number, got: ${config.pollIntervalMs}`);
 });
 
+test('apiBaseUrl defaults to lad.lviv.ua when API_BASE_URL is absent', () => {
+    const saved = process.env.API_BASE_URL;
+    delete process.env.API_BASE_URL;
+
+    const configPath = require.resolve('../config/index');
+    delete require.cache[configPath];
+    const freshConfig = require('../config/index');
+
+    assert.equal(freshConfig.apiBaseUrl, 'https://api.lad.lviv.ua');
+
+    if (saved !== undefined) process.env.API_BASE_URL = saved;
+    delete require.cache[configPath];
+});
+
 test('pollIntervalMs defaults to 5000 when POLL_INTERVAL_MS env var is absent', () => {
     const saved = process.env.POLL_INTERVAL_MS;
     delete process.env.POLL_INTERVAL_MS;

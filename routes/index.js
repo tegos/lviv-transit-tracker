@@ -3,7 +3,7 @@ const router = express.Router();
 
 const model = require('../models/model');
 const config = require('../config');
-const createCache = require('../utils/routeCache');
+const createCache = require('../services/routeCache');
 
 const routeCache = createCache();
 
