@@ -21,7 +21,10 @@
     "node": ">=20"
   },
   "scripts": {
+    "prestart": "vite build",
     "start": "node ./bin/www",
+    "build": "vite build",
+    "dev": "vite build --watch",
     "test": "NODE_ENV=test node --test test/*.test.js"
   },
   "dependencies": {
@@ -33,6 +36,10 @@
     "hammerjs": "^2.0.8",
     "morgan": "^1.11.0",
     "serve-favicon": "^2.5.1",
-    "socket.io": "^4.8.3"
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "vite": "^8.1.0"
   }
 }

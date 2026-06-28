@@ -2,6 +2,9 @@ node_modules/
 npm-debug.log*
 *.log
 
+# Vite build output
+public/dist/
+
 .env
 
 .idea/
