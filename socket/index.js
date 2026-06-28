@@ -4,63 +4,63 @@ const Model = require('../models/model');
 const config = require('../config');
 const createRegistry = require('./clientRegistry');
 const { toVehicles, toPath, isValidRouteId } = require('./transform');
+const Events = require('./events');
 
 function setupSocket(io) {
 	const registry = createRegistry();
 
 	io.on('connection', function (socket) {
-		// add bus
-		socket.on('add-bus', async function (route_id, ack) {
-			if (!isValidRouteId(route_id)) {
-				if (typeof ack === 'function') ack({ ok: false, error: 'invalid route id' });
+		// subscribe to a route: send its path once, then stream vehicle updates
+		socket.on(Events.ROUTE_SUBSCRIBE, async function (routeCode, ack) {
+			if (!isValidRouteId(routeCode)) {
+				if (typeof ack === 'function') ack({ ok: false, error: 'invalid route code' });
 				return;
 			}
-			registry.add(socket.id, route_id);
+			registry.add(socket.id, routeCode);
 
 			try {
-				const response = await Model.getPathData(route_id);
+				const response = await Model.getPathData(routeCode);
 				const routePathData = JSON.parse(response.getBody());
 				const path = toPath(routePathData.shapes);
-				socket.emit('drawRoute', { path, code: route_id });
+				socket.emit(Events.ROUTE_PATH, { routeCode, path });
 				if (typeof ack === 'function') ack({ ok: true });
 			} catch (err) {
-				console.error('add-bus error:', err);
+				console.error(`${Events.ROUTE_SUBSCRIBE} error:`, err);
 				if (typeof ack === 'function') ack({ ok: false, error: err.message });
 			}
 		});
 
-		// remove bus
-		socket.on('remove-bus', function (route_id) {
-			registry.remove(socket.id, route_id);
+		// unsubscribe from a route
+		socket.on(Events.ROUTE_UNSUBSCRIBE, function (routeCode) {
+			registry.remove(socket.id, routeCode);
 		});
 
-		// disconnect
 		socket.on('disconnect', function () {
 			registry.disconnect(socket.id);
 		});
 	});
 
-	// poll active routes and push updates to their subscribers
-	const intervalDefaultUpdate = setInterval(async function () {
-		const routes = registry.activeRoutes();
-		if (routes.size === 0) return;
+	// poll active routes and push vehicle updates to their subscribers
+	const pollInterval = setInterval(async function () {
+		const routeCodes = registry.activeRoutes();
+		if (routeCodes.size === 0) return;
 
-		for (const route_code of routes) {
+		for (const routeCode of routeCodes) {
 			try {
-				const response = await Model.getRoutes(route_code);
+				const response = await Model.getRoutes(routeCode);
 				const rawData = JSON.parse(response.getBody());
-				const routeData = toVehicles(rawData, route_code);
+				const vehicles = toVehicles(rawData, routeCode);
 
-				for (const socket_id of registry.subscribersOf(route_code)) {
-					io.sockets.sockets.get(socket_id)?.emit('defaultUpdate', routeData, route_code);
+				for (const socketId of registry.subscribersOf(routeCode)) {
+					io.sockets.sockets.get(socketId)?.emit(Events.VEHICLES_UPDATE, vehicles, routeCode);
 				}
 			} catch (err) {
-				console.error('defaultUpdate error for route', route_code, ':', err);
+				console.error(`${Events.VEHICLES_UPDATE} error for route`, routeCode, ':', err);
 			}
 		}
-	}, config.defaultUpdate).unref();
+	}, config.pollIntervalMs).unref();
 
-	return intervalDefaultUpdate;
+	return pollInterval;
 }
 
 module.exports = setupSocket;

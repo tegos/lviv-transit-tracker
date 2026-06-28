@@ -1,9 +1,9 @@
 require('dotenv').config();
 
-const parsedUpdate = parseInt(process.env.DEFAULT_UPDATE);
+const parsedPollInterval = parseInt(process.env.POLL_INTERVAL_MS);
 
 module.exports = {
-    defaultUpdate: (parsedUpdate > 0) ? parsedUpdate : 5000,
+    pollIntervalMs: (parsedPollInterval > 0) ? parsedPollInterval : 5000,
     port: parseInt(process.env.PORT) || 3000,
     googleMapsKey: process.env.GOOGLE_MAPS_KEY || '',
 };

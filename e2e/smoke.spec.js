@@ -19,7 +19,7 @@ test('home page renders routes from the bundle with no console errors', async ({
     expect(errors, `console errors: ${errors.join('\n')}`).toEqual([]);
 });
 
-test('toggling a route emits add-bus and the bundle handles the ack', async ({ page }) => {
+test('toggling a route subscribes and the bundle handles the ack', async ({ page }) => {
     await page.goto('/');
     // Wait for the bundle to finish loading the Maps API + initMap.
     await page.waitForFunction(() => !!(window.google && window.google.maps), null, { timeout: 20000 });
