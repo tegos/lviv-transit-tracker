@@ -34,7 +34,6 @@
     "dotenv": "^16.5.0",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
-    "hammerjs": "^2.0.8",
     "morgan": "^1.11.0",
     "serve-favicon": "^2.5.1",
     "socket.io": "^4.8.3",
