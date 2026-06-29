@@ -20,10 +20,6 @@ window.initMap = function () {
         disableDefaultUI: true,
     });
     mapUtil = new MapUtil(map);
-
-    document.querySelectorAll('.clear-marker').forEach((el) => {
-        el.addEventListener('click', () => mapUtil.deleteMarkers());
-    });
 };
 
 function loadGoogleMaps(key) {
@@ -64,14 +60,31 @@ function clearLoading(routeCode) {
 // Client-side filter of the route sidebar by name or code.
 function wireRouteSearch() {
     const search = document.getElementById('route-search');
-    if (!search) return;
+    const list = document.getElementById('route_stops');
+    if (!search || !list) return;
+
+    let emptyEl = null;
+    const showEmpty = (visible) => {
+        if (!emptyEl) {
+            emptyEl = document.createElement('div');
+            emptyEl.className = 'route-empty';
+            emptyEl.textContent = 'Маршрутів не знайдено';
+            list.append(emptyEl);
+        }
+        emptyEl.style.display = visible === 0 ? '' : 'none';
+    };
+
     search.addEventListener('input', () => {
         const q = search.value.trim().toLowerCase();
-        document.querySelectorAll('#route_stops .route-row').forEach((row) => {
+        let visible = 0;
+        list.querySelectorAll('.route-row').forEach((row) => {
             const name = (row.dataset.name || '').toLowerCase();
             const code = (row.dataset.code || '').toLowerCase();
-            row.style.display = (!q || name.includes(q) || code.includes(q)) ? '' : 'none';
+            const show = !q || name.includes(q) || code.includes(q);
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
         });
+        showEmpty(visible);
     });
 }
 

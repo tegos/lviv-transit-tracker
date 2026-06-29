@@ -12,11 +12,6 @@ const MARKER_PATH = 'M39.652,16.446C39.652,7.363,32.289,0,23.206,0C14.124,0,6.76
 export function createMap(el, options) {
     const map = new google.maps.Map(el, { zoom: 5, ...options });
 
-    window.addEventListener('resize', () => {
-        const center = map.getCenter();
-        map.setCenter(center);
-    });
-
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
             map.setCenter(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));

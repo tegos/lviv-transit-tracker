@@ -11,7 +11,7 @@ Real-time public transit tracker for Lviv, Ukraine. Select bus routes on a Googl
 
 ## History
 
-Built in 2017 against the SimpleRIDE API provided by the Lviv transit authority. That API went offline in July 2018 and stayed dead for years. In 2026 the project was modernized (Node 24, Express 5, Socket.IO 4) and migrated to [api.lad.lviv.ua](https://github.com/vbhjckfd/timetable-api-node) - an open, live JSON REST API for Lviv public transit. Live bus data works again.
+Built in 2017 against the SimpleRIDE API provided by the Lviv transit authority. That API went offline in July 2018 and stayed dead for years. In 2026 the project was modernized (Node 20+, Express 5, Socket.IO 4) and migrated to [api.lad.lviv.ua](https://github.com/vbhjckfd/timetable-api-node) - an open, live JSON REST API for Lviv public transit. Live bus data works again.
 
 ## How it works
 
@@ -85,9 +85,16 @@ npm run test:e2e      # Playwright browser smoke tests
 
 ## Contributing
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the local checks to run, and
+the branch/PR workflow. In short:
+
 1. Fork the repo and create a feature branch (`git checkout -b feat/my-feature`)
 2. Make your changes and add tests where relevant
-3. Push the branch and open a pull request
+3. Run `npm test` and `npm run build`
+4. Push the branch and open a pull request
+
+Security issues: please follow [SECURITY.md](SECURITY.md) rather than opening a
+public issue. By participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -95,4 +102,4 @@ MIT - see [LICENSE](LICENSE) for details.
 
 ## Author
 
-[Ivan Mykhavko](https://github.com/Tegos)
+[Ivan Mykhavko](https://github.com/tegos)

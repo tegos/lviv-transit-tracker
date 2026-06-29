@@ -1,9 +1,27 @@
+/* Visually hidden but still focusable and in the accessibility tree, so the
+   route checkboxes remain operable by keyboard and screen reader (display:none
+   removed them from both). The custom .check box is the visible control. */
 input[type="checkbox"] {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
 input[type="checkbox"] ~ label {
     color: #f2f2f2;
+}
+
+/* Keyboard focus indicator on the custom box. */
+input[type="checkbox"]:focus-visible ~ label .check {
+    outline: 2px solid #8ab4f8;
+    outline-offset: 2px;
 }
 
 input[type="checkbox"] ~ label .check {

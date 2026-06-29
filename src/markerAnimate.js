@@ -20,14 +20,19 @@ export function installMarkerAnimate() {
         }
 
         const animateStep = (marker, startTime) => {
+            // Marker removed from the map mid-flight (e.g. route unsubscribed):
+            // stop animating instead of churning frames on a detached marker.
+            if (!marker.getMap()) return;
+
             const elapsed = performance.now() - startTime;
             const ratio = elapsed / duration; // 0 - 1 (linear easing)
 
             if (ratio < 1) {
-                marker.setPosition(new google.maps.LatLng(
-                    marker.AT_startPosition_lat + (newPosition_lat - marker.AT_startPosition_lat) * ratio,
-                    marker.AT_startPosition_lng + (newPosition_lng - marker.AT_startPosition_lng) * ratio,
-                ));
+                // LatLngLiteral avoids allocating a new LatLng object each frame.
+                marker.setPosition({
+                    lat: marker.AT_startPosition_lat + (newPosition_lat - marker.AT_startPosition_lat) * ratio,
+                    lng: marker.AT_startPosition_lng + (newPosition_lng - marker.AT_startPosition_lng) * ratio,
+                });
                 marker.AT_animationHandler = requestAnimationFrame(() => animateStep(marker, startTime));
             } else {
                 marker.setPosition(newPosition);
