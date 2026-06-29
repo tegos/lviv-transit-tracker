@@ -7,7 +7,7 @@
 
 Real-time public transit tracker for Lviv, Ukraine. Select bus routes on a Google Map and watch vehicle positions update live every 5 seconds.
 
-![preview](docs/preview.gif)
+<img src="assets/demo.webp" alt="Lviv Transit Tracker demo" width="800">
 
 ## History
 
