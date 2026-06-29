@@ -25,8 +25,9 @@ before(async () => {
     httpServer = http.createServer();
     io = new Server(httpServer);
     // Long interval so the auto-loop never fires during tests; cycles are
-    // driven deterministically via socketCtl.pollOnce().
-    socketCtl = setupSocket(io, { pollIntervalMs: 60000 });
+    // driven deterministically via socketCtl.pollOnce(). isKnownRoute is stubbed
+    // so route validation doesn't reach the network (covered in socketSecurity).
+    socketCtl = setupSocket(io, { pollIntervalMs: 60000, isKnownRoute: async () => true });
     await new Promise((resolve) => httpServer.listen(0, resolve));
     port = httpServer.address().port;
 });

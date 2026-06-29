@@ -14,6 +14,12 @@ function createRegistry() {
         remove(socketId, route) {
             clients.get(socketId)?.delete(route);
         },
+        count(socketId) {
+            return clients.get(socketId)?.size ?? 0;
+        },
+        has(socketId, route) {
+            return clients.get(socketId)?.has(route) ?? false;
+        },
         disconnect(socketId) {
             clients.delete(socketId);
         },

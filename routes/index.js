@@ -1,16 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const model = require('../models/model');
 const config = require('../config');
-const createCache = require('../services/routeCache');
-
-const routeCache = createCache();
-
-// Fetch + parse the route list, cached for routeCache's TTL.
-async function getRouteList() {
-    return routeCache.get(() => model.getBuses());
-}
+const routeList = require('../services/routeList');
 
 /* Liveness probe: no external I/O, so platform health checks stay decoupled
    from upstream api.lad.lviv.ua availability. */
@@ -33,7 +25,7 @@ router.get('/', async function (req, res) {
     const view_data = {title: 'Транспорт Львова Live - відстеження транспорту онлайн', googleMapsKey: config.googleMapsKey};
 
     try {
-        const routes = await getRouteList();
+        const routes = await routeList.getRoutes();
 
         // Build view objects without mutating the cached list (shared with /json).
         view_data.routes = routes.map(function (route) {
@@ -63,7 +55,7 @@ router.get('/', async function (req, res) {
 /* GET Json Data */
 router.get('/json', async function (req, res) {
     try {
-        const json = await getRouteList();
+        const json = await routeList.getRoutes();
         res.send(json);
     } catch (error) {
         console.error(error);

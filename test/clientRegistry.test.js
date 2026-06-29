@@ -35,6 +35,19 @@ test('disconnect clears all routes for a client (no zombie routes)', () => {
     assert.deepEqual([...reg.activeRoutes()], []);
 });
 
+test('count and has reflect a client\'s subscriptions', () => {
+    const reg = createRegistry();
+    assert.equal(reg.count('sock1'), 0);
+    assert.equal(reg.has('sock1', '27'), false);
+    reg.add('sock1', '27');
+    reg.add('sock1', '3a');
+    assert.equal(reg.count('sock1'), 2);
+    assert.equal(reg.has('sock1', '27'), true);
+    assert.equal(reg.has('sock1', '99'), false);
+    reg.remove('sock1', '27');
+    assert.equal(reg.count('sock1'), 1);
+});
+
 test('subscribersOf lists socket ids subscribed to a route', () => {
     const reg = createRegistry();
     reg.add('sock1', '27');
