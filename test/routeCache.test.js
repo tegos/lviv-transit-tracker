@@ -51,3 +51,13 @@ test('a rejected fetch is not cached; next call retries', async () => {
     assert.equal(val, 'ok');
     assert.equal(calls, 2);
 });
+
+test('serves the last good value when a post-ttl refresh fails (serve-stale-on-error)', async () => {
+    let clock = 0;
+    const cache = createCache({ ttl: 1000, now: () => clock });
+    await cache.get(async () => 'fresh');
+
+    clock = 2000; // past ttl, forces a refresh
+    const val = await cache.get(async () => { throw new Error('upstream down'); });
+    assert.equal(val, 'fresh'); // stale value served instead of throwing
+});

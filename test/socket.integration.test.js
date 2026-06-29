@@ -15,7 +15,7 @@ const Events = require('../socket/events');
 
 let httpServer;
 let io;
-let interval;
+let socketCtl;
 let port;
 
 const origGetPathData = Model.getPathData;
@@ -24,13 +24,15 @@ const origGetRoutes = Model.getRoutes;
 before(async () => {
     httpServer = http.createServer();
     io = new Server(httpServer);
-    interval = setupSocket(io);
+    // Long interval so the auto-loop never fires during tests; cycles are
+    // driven deterministically via socketCtl.pollOnce().
+    socketCtl = setupSocket(io, { pollIntervalMs: 60000 });
     await new Promise((resolve) => httpServer.listen(0, resolve));
     port = httpServer.address().port;
 });
 
 after(() => {
-    clearInterval(interval);
+    socketCtl.stop();
     io.close();
     httpServer.close();
 });
@@ -89,5 +91,55 @@ test('route:subscribe acks an error when the path fetch fails', async () => {
         assert.match(ack.error, /upstream down/);
     } finally {
         client.disconnect();
+    }
+});
+
+test('poll cycle fetches active routes and pushes vehicles:update to subscribers', async () => {
+    Model.getPathData = async () => ({ shapes: [[[49.84, 24.03]]] });
+    Model.getRoutes = async () => [{ id: 'bus1', location: [49.84, 24.03], bearing: 90 }];
+
+    const client = connect();
+    try {
+        await client.emitWithAck(Events.ROUTE_SUBSCRIBE, '27');
+
+        const update = new Promise((resolve) =>
+            client.on(Events.VEHICLES_UPDATE, (vehicles, routeCode) => resolve({ vehicles, routeCode })));
+
+        await socketCtl.pollOnce();
+
+        const { vehicles, routeCode } = await update;
+        assert.equal(routeCode, '27');
+        assert.deepEqual(vehicles, [
+            { id: 'bus1', lat: 49.84, lng: 24.03, bearing: 90, routeCode: '27', name: 'bus1' },
+        ]);
+    } finally {
+        client.disconnect();
+    }
+});
+
+test('a route whose fetch throws does not abort the cycle for other routes', async () => {
+    Model.getPathData = async () => ({ shapes: [[[49.84, 24.03]]] });
+    Model.getRoutes = async (code) => {
+        if (code === 'bad') throw new Error('upstream 500');
+        return [{ id: 'busA', location: [49.84, 24.03], bearing: 0 }];
+    };
+
+    const good = connect();
+    const bad = connect();
+    try {
+        await bad.emitWithAck(Events.ROUTE_SUBSCRIBE, 'bad');
+        await good.emitWithAck(Events.ROUTE_SUBSCRIBE, '5');
+
+        const update = new Promise((resolve) =>
+            good.on(Events.VEHICLES_UPDATE, (vehicles, routeCode) => resolve({ vehicles, routeCode })));
+
+        await socketCtl.pollOnce();
+
+        const { routeCode, vehicles } = await update;
+        assert.equal(routeCode, '5');
+        assert.equal(vehicles[0].id, 'busA');
+    } finally {
+        good.disconnect();
+        bad.disconnect();
     }
 });

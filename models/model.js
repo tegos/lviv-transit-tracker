@@ -11,7 +11,10 @@ async function get(url, timeout) {
             const body = await res.text();
             throw Object.assign(new Error(body), { code: res.status });
         }
-        return res.json();
+        // Awaited so the abort timer stays armed until the body is fully read.
+        // `return res.json()` would let `finally` clear the timeout before the
+        // (multi-MB) body finished downloading, leaving the read unprotected.
+        return await res.json();
     } finally {
         clearTimeout(id);
     }

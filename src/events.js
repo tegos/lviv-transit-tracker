@@ -12,6 +12,10 @@ export function handleVehiclesUpdate(mapUtil, vehicles, routeCode) {
             mapUtil.addMarker(position, vehicle.id, infowindow, vehicle.bearing, routeCode);
         }
     });
+
+    // Drop markers for vehicles that fell out of this update (ended shift /
+    // stopped reporting) so they don't linger frozen and accumulate.
+    mapUtil.reconcileRoute(routeCode, new Set(vehicles.map((v) => v.id)));
 }
 
 export function handleRoutePath(mapUtil, { routeCode, path }) {

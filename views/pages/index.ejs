@@ -11,7 +11,7 @@
 
 <div id="map"></div>
 <div id="menu">
-    <input id="route-search" type="search" placeholder="Пошук маршруту..." autocomplete="off"/>
+    <input id="route-search" type="search" placeholder="Пошук маршруту..." aria-label="Пошук маршруту" autocomplete="off"/>
     <div id="route_stops">
         <% routes.forEach(function (route) { %>
         <div class="route-row" title="<%= route['Name'] %>" data-name="<%= route['Name'] %>" data-code="<%= route['Code'] %>">

@@ -24,6 +24,13 @@ function createCache({ ttl = 5 * 60 * 1000, now = Date.now } = {}) {
             })();
             try {
                 return await inFlight;
+            } catch (err) {
+                // Serve-stale-on-error: a brief upstream outage shouldn't take
+                // the page down when a slightly-stale list is still in memory.
+                // Only propagate when there's no previously-good value to fall
+                // back to (cold cache).
+                if (value !== null) return value;
+                throw err;
             } finally {
                 inFlight = null;
             }

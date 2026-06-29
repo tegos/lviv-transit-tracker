@@ -3,10 +3,13 @@ services:
     name: lviv-transit-tracker
     runtime: node
     plan: free
-    buildCommand: npm install --include=dev && npm run build
+    buildCommand: npm ci && npm run build
     startCommand: node ./bin/www
+    healthCheckPath: /healthz
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: 22
       - key: GOOGLE_MAPS_KEY
         sync: false
