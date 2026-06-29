@@ -44,3 +44,8 @@ test('getRoutes returns parsed JSON', async () => {
     const data = await model.getRoutes('15');
     assert.deepEqual(data, [{ id: 1 }]);
 });
+
+test('a failure while reading the body propagates (json is awaited under the timeout)', async () => {
+    global.fetch = async () => ({ ok: true, json: async () => { throw new Error('body read aborted'); } });
+    await assert.rejects(() => model.getRoutes('15'), /body read aborted/);
+});

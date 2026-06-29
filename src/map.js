@@ -110,4 +110,21 @@ export class MapUtil {
             }
         }
     }
+
+    // Removes markers for `code` whose vehicle id is no longer in `keepIds`,
+    // so buses that stopped reporting don't stay frozen on the map (and leak
+    // their marker + InfoWindow + click listener) for the rest of the session.
+    reconcileRoute(code, keepIds) {
+        for (const [id, marker] of this.markers) {
+            if (marker.routeCode === code && !keepIds.has(id)) {
+                marker.setMap(null);
+                this.markers.delete(id);
+            }
+        }
+    }
+
+    clearPaths() {
+        for (const mapPath of this.paths.values()) mapPath.setMap(null);
+        this.paths.clear();
+    }
 }

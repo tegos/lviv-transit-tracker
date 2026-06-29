@@ -12,6 +12,12 @@ async function getRouteList() {
     return routeCache.get(() => model.getBuses());
 }
 
+/* Liveness probe: no external I/O, so platform health checks stay decoupled
+   from upstream api.lad.lviv.ua availability. */
+router.get('/healthz', function (req, res) {
+    res.status(200).json({ status: 'ok' });
+});
+
 /* about page. */
 router.get('/about', function (req, res) {
     res.render('pages/about', { title: 'Про застосунок — Транспорт Львова Live', googleMapsKey: config.googleMapsKey });
@@ -48,7 +54,9 @@ router.get('/', async function (req, res) {
         }
 
         console.error(error);
-        return res.status(400).send({ message: errorMessage });
+        // Upstream/gateway failure, not a client error -> 502, so monitoring and
+        // any health check keying on 5xx classify it correctly.
+        return res.status(502).send({ message: errorMessage });
     }
 });
 

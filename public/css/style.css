@@ -170,7 +170,7 @@ body.app-page {
 }
 
 .text-center { text-align: center; }
-.text-muted { color: #9aa0a6; }
+.text-muted { color: #b6bbc0; } /* >=4.5:1 on the #40464b page bg (WCAG AA) */
 
 /* Loading spinner while a route subscription is pending */
 .route-row.loading > label::before {

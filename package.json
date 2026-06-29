@@ -1,8 +1,8 @@
 {
-  "name": "lviv-transport-monitoring-express",
+  "name": "lviv-transit-tracker",
   "version": "0.0.2",
   "private": true,
-  "description": "Real-time Lviv public transit tracker - bus positions on Google Maps via Socket.IO and the SimpleRIDE API",
+  "description": "Real-time Lviv public transit tracker - bus positions on Google Maps via Socket.IO and the api.lad.lviv.ua REST API",
   "keywords": [
     "lviv",
     "transit",
@@ -29,7 +29,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "cookie-parser": "^1.4.7",
+    "compression": "^1.8.0",
     "debug": "^4.4.3",
     "dotenv": "^16.5.0",
     "ejs": "^6.0.1",
@@ -37,10 +37,10 @@
     "morgan": "^1.11.0",
     "serve-favicon": "^2.5.1",
     "socket.io": "^4.8.3",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "vite": "^8.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.1",
-    "vite": "^8.1.0"
+    "@playwright/test": "^1.61.1"
   }
 }

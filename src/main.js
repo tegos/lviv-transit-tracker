@@ -104,7 +104,28 @@ function wireNavbarToggle() {
     const toggle = document.querySelector('.navbar-toggle');
     const target = document.getElementById('navbar');
     if (!toggle || !target) return;
-    toggle.addEventListener('click', () => target.classList.toggle('in'));
+    toggle.addEventListener('click', () => {
+        const open = target.classList.toggle('in');
+        toggle.setAttribute('aria-expanded', String(open));
+    });
+}
+
+// Re-subscribes every checked route. Runs on every (re)connect: the server
+// tracks subscriptions per socket.id and purges them on disconnect, so without
+// this a reconnect (deploy, network blip) leaves checkboxes checked while the
+// map silently stops updating.
+function resubscribeChecked(socket) {
+    document.querySelectorAll('#route_stops input:checked').forEach((input) => {
+        const row = input.closest('.route-row');
+        if (row) row.classList.add('loading');
+        socket.emit(Events.ROUTE_SUBSCRIBE, input.value, (res) => {
+            if (res && !res.ok) {
+                console.error(`${Events.ROUTE_SUBSCRIBE} failed:`, res.error);
+                input.checked = false;
+                if (row) row.classList.remove('loading');
+            }
+        });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -112,6 +133,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapsKey = config ? config.dataset.mapsKey : '';
 
     const socket = io();
+
+    // On reconnect the old map state is stale and the server has no record of
+    // our subscriptions: clear what's drawn, then re-subscribe the checked
+    // routes. The first connect is a no-op clear with nothing checked yet.
+    let connectedBefore = false;
+    socket.on('connect', () => {
+        if (connectedBefore && mapUtil) {
+            mapUtil.deleteMarkers();
+            mapUtil.clearPaths();
+        }
+        connectedBefore = true;
+        resubscribeChecked(socket);
+    });
+
     socket.on(Events.VEHICLES_UPDATE, (vehicles, routeCode) => {
         clearLoading(routeCode);
         if (mapUtil) handleVehiclesUpdate(mapUtil, vehicles, routeCode);

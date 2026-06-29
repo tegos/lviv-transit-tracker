@@ -6,7 +6,7 @@ const createRegistry = require('./clientRegistry');
 const { toVehicles, toPath, isValidRouteId } = require('./transform');
 const Events = require('./events');
 
-function setupSocket(io) {
+function setupSocket(io, { pollIntervalMs = config.pollIntervalMs } = {}) {
 	const registry = createRegistry();
 
 	io.on('connection', function (socket) {
@@ -39,12 +39,13 @@ function setupSocket(io) {
 		});
 	});
 
-	// poll active routes and push vehicle updates to their subscribers
-	const pollInterval = setInterval(async function () {
+	// One poll cycle: fetch every active route concurrently and push updates.
+	// Per-route try/catch so a single failing route never rejects the batch.
+	async function pollOnce() {
 		const routeCodes = registry.activeRoutes();
 		if (routeCodes.size === 0) return;
 
-		for (const routeCode of routeCodes) {
+		await Promise.allSettled([...routeCodes].map(async (routeCode) => {
 			try {
 				const rawData = await Model.getRoutes(routeCode);
 				const vehicles = toVehicles(rawData, routeCode);
@@ -55,10 +56,40 @@ function setupSocket(io) {
 			} catch (err) {
 				console.error(`${Events.VEHICLES_UPDATE} error for route`, routeCode, ':', err);
 			}
-		}
-	}, config.pollIntervalMs).unref();
+		}));
+	}
 
-	return pollInterval;
+	// Self-scheduling loop instead of setInterval: the next cycle is scheduled
+	// only after the current one settles, so a slow upstream can never stack
+	// overlapping cycles (which previously caused duplicate emits + request
+	// amplification against an already-degraded API).
+	let pollTimer = null;
+	let stopped = false;
+
+	function scheduleNext() {
+		if (stopped) return;
+		pollTimer = setTimeout(async () => {
+			try {
+				await pollOnce();
+			} finally {
+				scheduleNext();
+			}
+		}, pollIntervalMs);
+		pollTimer.unref();
+	}
+
+	scheduleNext();
+
+	return {
+		// Stops the poll loop and clears any pending timer (used on shutdown).
+		stop() {
+			stopped = true;
+			if (pollTimer) clearTimeout(pollTimer);
+		},
+		// Runs a single poll cycle on demand (used by tests to trigger a tick
+		// deterministically without waiting for the interval).
+		pollOnce,
+	};
 }
 
 module.exports = setupSocket;
