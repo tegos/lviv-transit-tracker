@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 const parsedPollInterval = parseInt(process.env.POLL_INTERVAL_MS);
 

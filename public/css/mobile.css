@@ -14,6 +14,13 @@
         width: 240px;
     }
 
+    /* Comfortable touch targets for route rows (>= 44px recommended). */
+    #route_stops div {
+        height: auto;
+        min-height: 44px;
+        line-height: 44px;
+    }
+
     .navbar-toggle {
         display: block;
     }

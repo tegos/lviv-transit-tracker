@@ -190,6 +190,23 @@ body.app-page {
     to { transform: rotate(360deg); }
 }
 
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+    .route-row.loading > label::before {
+        animation-duration: 1.5s;
+    }
+    * {
+        scroll-behavior: auto;
+    }
+}
+
+/* Empty result message for the route search filter. */
+.route-empty {
+    padding: 12px;
+    color: #b6bbc0;
+    font-style: italic;
+}
+
 /* Route search filter */
 #route-search {
     box-sizing: border-box;

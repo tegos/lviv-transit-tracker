@@ -5,10 +5,14 @@
   "description": "Real-time Lviv public transit tracker - bus positions on Google Maps via Socket.IO and the api.lad.lviv.ua REST API",
   "keywords": [
     "lviv",
+    "ukraine",
     "transit",
+    "public-transport",
     "realtime",
     "socket.io",
     "express",
+    "vite",
+    "ejs",
     "google-maps",
     "bus-tracker"
   ],
@@ -26,12 +30,13 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "test": "NODE_ENV=test node --test test/*.test.js",
+    "test:coverage": "NODE_ENV=test node --test --experimental-test-coverage test/*.test.js",
     "test:e2e": "playwright test"
   },
   "dependencies": {
     "compression": "^1.8.0",
     "debug": "^4.4.3",
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "helmet": "^8.2.0",
