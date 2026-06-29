@@ -16,6 +16,32 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+// Render sends SIGTERM on every deploy/restart and waits ~30s before SIGKILL.
+// Drain instead of hard-dropping in-flight requests and live sockets.
+let shuttingDown = false;
+function shutdown(signal) {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log(`${signal} received, shutting down`);
+    if (app.socketCtl) app.socketCtl.stop();
+    app.io.close();
+    server.close(() => process.exit(0));
+    // Force-exit if connections don't drain in time.
+    setTimeout(() => process.exit(1), 10000).unref();
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+
+// Last-resort safety net so a stray rejection/throw becomes a logged line (and
+// a clean restart) instead of silent downtime.
+process.on('unhandledRejection', (reason) => {
+    console.error('unhandledRejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+    console.error('uncaughtException:', err);
+    process.exit(1);
+});
+
 function normalizePort(val) {
     const p = parseInt(val, 10);
     if (isNaN(p)) return val;
