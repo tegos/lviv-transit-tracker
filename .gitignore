@@ -19,3 +19,6 @@ playwright-report/
 
 # Superpowers SDD scratch (ledger, briefs, review diffs)
 .superpowers/
+
+# Local markdown issue tracker (specs, tickets, wayfinder maps)
+.scratch/
